@@ -72,15 +72,21 @@ public class Contacts {
     public static void viewAll(){
         Path dataDirectory = addFile().get(0);
         Path dataFile = addFile().get(1);
+
         try {
             List<String> contactsListFromFile = Files.readAllLines(dataFile);
 //            System.out.println(contactsListFromFile);
             for(String line:contactsListFromFile) {
-                System.out.println(line);;
+
+                String[] formattedContacts = line.split(",");
+                String name = formattedContacts[0];
+                String number = formattedContacts[1];
+                System.out.printf("%-15s | %-10s%n",name,number);
             }
         } catch(IOException e) {
             e.printStackTrace();
         }
+        menu();
     }
 
     public static void addContact (){
@@ -105,7 +111,8 @@ public class Contacts {
         String[] newGuy = contactName.split(",");
         String name = newGuy[0];
         String number = newGuy[1];
-        System.out.printf("You added %s with a phone number of %s", name, number);
+        System.out.printf("You added %s with a phone number of %s%n", name, number);
+        menu();
     }
 
     public static void contactByName(){
@@ -125,6 +132,7 @@ public class Contacts {
         } catch(IOException e){
             e.printStackTrace();
         }
+        menu();
     }
     public static void deleteContactbyName(){
         Path dataDirectory = addFile().get(0);
@@ -150,16 +158,6 @@ public class Contacts {
         } catch(IOException e){
             e.printStackTrace();
         }
-
-    }
-
-
-    public static void main(String[] args) {
-        deleteContactbyName();
-
-// Create a list from the array using Arrays.asList()
-
-// Access and print the first contact in the list
-
+        menu();
     }
 }
