@@ -1,8 +1,8 @@
-import Methods.AddDataFile;
+import Methods.Contacts;
+
 public class Main {
 
     public static void main(String[] args) {
-        // add data file with contacts list
-        AddDataFile.addFile();
+        Methods.Contacts.menu();
     }
 }
