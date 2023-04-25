@@ -12,6 +12,9 @@ import java.util.Scanner;
 
 public class Contacts {
     public static Scanner scanner = new Scanner(System.in);
+    public static final String ANSI_BLACK = "\u001B[30m";
+    public static final String ANSI_YELLOW_BACKGROUND = "\u001B[43m";
+    public static final String format = ANSI_BLACK + ANSI_YELLOW_BACKGROUND;
 
     // creates contacts.txt file
     public static Path addFile() {
@@ -40,7 +43,7 @@ public class Contacts {
 
     // shows user the menu options and get their choice
     public static void menu() {
-        System.out.print("""
+        System.out.print(format + """
                 1. View contacts.
                 2. Add a new contact.
                 3. Search a contact by name.
@@ -48,8 +51,8 @@ public class Contacts {
                 5. Exit.
                 Enter an option (1, 2, 3, 4 or 5):
                                            
-                """);
-        String userChoiceStr = scanner.nextLine();
+                """ + format);
+        String userChoiceStr =  scanner.nextLine();
         int userChoice = Integer.parseInt(userChoiceStr);
         menuChoice(userChoice);
     }
