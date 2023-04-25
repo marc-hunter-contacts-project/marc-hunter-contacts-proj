@@ -13,10 +13,10 @@ import java.util.Scanner;
 public class Contacts {
     public static Scanner scanner = new Scanner(System.in);
 
+    // creates contacts.txt file
     public static Path addFile() {
         String directory = "data";
         String filename = "contacts.txt";
-
         Path dataDirectory = Paths.get(directory);
         Path dataFile = Paths.get(directory, filename);
 
@@ -34,12 +34,11 @@ public class Contacts {
                 e.printStackTrace();
             }
         }
-        List<Path> pathList = new ArrayList<>();
-        pathList.add(dataDirectory);
-        pathList.add(dataFile);
+
         return dataFile;
     }
 
+    // shows user the menu options and get their choice
     public static void menu() {
         System.out.print("""
                 1. View contacts.
@@ -55,6 +54,7 @@ public class Contacts {
         menuChoice(userChoice);
     }
 
+    // runs correct method based on userInput
     public static void menuChoice(int userChoice) {
         Path dataFile = addFile();
 
@@ -62,7 +62,7 @@ public class Contacts {
             case 1 -> viewAll(dataFile);//View contacts;
             case 2 -> addContact(dataFile);
             case 3 -> contactByName(dataFile);
-            case 4 -> deleteContactbyName(dataFile);
+            case 4 -> deleteContactByName(dataFile);
             case 5 -> System.out.println("BYE");
             default -> {
                 System.out.println("Invalid Choice");
@@ -71,28 +71,36 @@ public class Contacts {
         }
     }
 
+    // shows the entire contact list
     public static void viewAll(Path dataFile) {
-
         try {
             List<String> contactsListFromFile = Files.readAllLines(dataFile);
-            for(String line:contactsListFromFile) {
+
+            for (String line : contactsListFromFile) {
                 String[] formattedContacts = line.split(",");
                 String name = formattedContacts[0];
                 String number = formattedContacts[1];
-                System.out.printf("%-15s | %-10s%n",name,number);
+                System.out.printf("%-15s | %-10s%n", name, number);
+
+                if (formattedContacts[0].equals("Name") && formattedContacts[1].equals("Phone")){
+                    System.out.println("--------------- | ----------");
+                }
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
+
+        System.out.println();
         menu();
     }
 
-    public static void addContact (Path dataFile){
+    // adds contact to contacts.txt
+    public static void addContact(Path dataFile) {
 
-        String contactInfo = "Add a contact/ firstLast,#########";
-        System.out.println(contactInfo);
+        System.out.println("Add a contact: (Name,Phone Number)");
         String contactName = scanner.nextLine();
         String formattedInfo = formatNumber(contactName);
+
         try {
             List<String> contactsListFromFile = Files.readAllLines(dataFile);
             Files.write(dataFile, contactsListFromFile);
@@ -102,17 +110,18 @@ public class Contacts {
                     newContact,
                     StandardOpenOption.APPEND
             );
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        String[] newGuy = formattedInfo.split(",");
-        String name = newGuy[0];
-        String number = newGuy[1];
-        System.out.printf("You added %s with a phone number of %s%n", name, number);
+
+        String[] newContact = formattedInfo.split(",");
+        System.out.printf("You added \"%s\" with a phone number of \"%s\".%n%n", newContact[0], newContact[1]);
+
         menu();
     }
 
-    public static String formatNumber (String contactInfo) {
+    // formats phone number with dashes
+    public static String formatNumber(String contactInfo) {
         System.out.println(contactInfo);
         String[] contactInfoArr = contactInfo.split(",");
         contactInfoArr[1] = contactInfoArr[1].replaceFirst("(\\d{3})(\\d{3})(\\d+)", "$1-$2-$3");   //123-456-7890
@@ -120,33 +129,37 @@ public class Contacts {
         return formattedInfo;
     }
 
-    public static void contactByName(Path dataFile){
-
-        System.out.println("Search contact by name");
+    // shows contact info given a name
+    public static void contactByName(Path dataFile) {
+        System.out.println("Search contact by name:");
         String userInput = scanner.nextLine();
         try {
             List<String> contactsListFromFile = Files.readAllLines(dataFile);
-            for(String line:contactsListFromFile) {
+            for (String line : contactsListFromFile) {
                 String[] contactInfo = line.split(",");
-                if(contactInfo[0].equalsIgnoreCase(userInput)){
-                    System.out.println(line);
+                if (contactInfo[0].equalsIgnoreCase(userInput)) {
+                    System.out.println(line + "\n");
                 }
             }
-        } catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
+
         menu();
     }
-    public static void deleteContactbyName(Path dataFile){
 
-        System.out.println("Search contact by name");
+    // deletes contact by inputted name
+    public static void deleteContactByName(Path dataFile) {
+
+        System.out.println("Enter a contact name to delete.");
         String userInput = scanner.nextLine();
+
         List<String> newList = new ArrayList<>();
         try {
             List<String> contactsListFromFile = Files.readAllLines(dataFile);
-            for(String line:contactsListFromFile) {
+            for (String line : contactsListFromFile) {
                 String[] contactInfo = line.split(",");
-                if(contactInfo[0].equalsIgnoreCase(userInput)){
+                if (contactInfo[0].equalsIgnoreCase(userInput)) {
                     continue;
                 } else {
                     newList.add(line);
@@ -156,13 +169,10 @@ public class Contacts {
                     dataFile,
                     newList
             );
-        } catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        menu();
-    }
 
-    public static void main(String[] args) {
-        System.out.println(formatNumber("Martin B,2101231234"));
+        menu();
     }
 }
