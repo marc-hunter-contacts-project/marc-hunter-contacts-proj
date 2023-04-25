@@ -13,7 +13,7 @@ import java.util.Scanner;
 public class Contacts {
     public static Scanner scanner = new Scanner(System.in);
 
-    public static List<Path> addFile() {
+    public static Path addFile() {
         String directory = "data";
         String filename = "contacts.txt";
 
@@ -37,7 +37,7 @@ public class Contacts {
         List<Path> pathList = new ArrayList<>();
         pathList.add(dataDirectory);
         pathList.add(dataFile);
-        return pathList;
+        return dataFile;
     }
 
     public static void menu() {
@@ -56,11 +56,13 @@ public class Contacts {
     }
 
     public static void menuChoice(int userChoice) {
+        Path dataFile = addFile();
+
         switch (userChoice) {
-            case 1 -> viewAll();//View contacts;
-            case 2 -> addContact();
-            case 3 -> contactByName();
-            case 4 -> deleteContactbyName();
+            case 1 -> viewAll(dataFile);//View contacts;
+            case 2 -> addContact(dataFile);
+            case 3 -> contactByName(dataFile);
+            case 4 -> deleteContactbyName(dataFile);
             case 5 -> System.out.println("BYE");
             default -> {
                 System.out.println("Invalid Choice");
@@ -69,15 +71,11 @@ public class Contacts {
         }
     }
 
-    public static void viewAll(){
-        Path dataDirectory = addFile().get(0);
-        Path dataFile = addFile().get(1);
+    public static void viewAll(Path dataFile) {
 
         try {
             List<String> contactsListFromFile = Files.readAllLines(dataFile);
-//            System.out.println(contactsListFromFile);
             for(String line:contactsListFromFile) {
-
                 String[] formattedContacts = line.split(",");
                 String name = formattedContacts[0];
                 String number = formattedContacts[1];
@@ -89,17 +87,16 @@ public class Contacts {
         menu();
     }
 
-    public static void addContact (){
-        Path dataDirectory = addFile().get(0);
-        Path dataFile = addFile().get(1);
+    public static void addContact (Path dataFile){
 
         String contactInfo = "Add a contact/ firstLast,#########";
         System.out.println(contactInfo);
         String contactName = scanner.nextLine();
+        String formattedInfo = formatNumber(contactName);
         try {
             List<String> contactsListFromFile = Files.readAllLines(dataFile);
             Files.write(dataFile, contactsListFromFile);
-            List<String> newContact = Arrays.asList(contactName);
+            List<String> newContact = Arrays.asList(formattedInfo);
             Files.write(
                     dataFile,
                     newContact,
@@ -108,16 +105,22 @@ public class Contacts {
         } catch(IOException e) {
             e.printStackTrace();
         }
-        String[] newGuy = contactName.split(",");
+        String[] newGuy = formattedInfo.split(",");
         String name = newGuy[0];
         String number = newGuy[1];
         System.out.printf("You added %s with a phone number of %s%n", name, number);
         menu();
     }
 
-    public static void contactByName(){
-        Path dataDirectory = addFile().get(0);
-        Path dataFile = addFile().get(1);
+    public static String formatNumber (String contactInfo) {
+        System.out.println(contactInfo);
+        String[] contactInfoArr = contactInfo.split(",");
+        contactInfoArr[1] = contactInfoArr[1].replaceFirst("(\\d{3})(\\d{3})(\\d+)", "$1-$2-$3");   //123-456-7890
+        String formattedInfo = contactInfoArr[0] + "," + contactInfoArr[1];
+        return formattedInfo;
+    }
+
+    public static void contactByName(Path dataFile){
 
         System.out.println("Search contact by name");
         String userInput = scanner.nextLine();
@@ -134,9 +137,7 @@ public class Contacts {
         }
         menu();
     }
-    public static void deleteContactbyName(){
-        Path dataDirectory = addFile().get(0);
-        Path dataFile = addFile().get(1);
+    public static void deleteContactbyName(Path dataFile){
 
         System.out.println("Search contact by name");
         String userInput = scanner.nextLine();
@@ -159,5 +160,9 @@ public class Contacts {
             e.printStackTrace();
         }
         menu();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(formatNumber("Martin B,2101231234"));
     }
 }
